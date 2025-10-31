@@ -1,0 +1,319 @@
+/**
+ * CFTV Orçamento Visual - Estilos Principais
+ * Arquivo de estilos CSS para o sistema de geração de orçamentos CFTV
+ * Autor: Sistema CFTV
+ * Data: 2025
+ */
+
+/* ========================================
+   IMPORTAÇÕES E FONTES
+======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* ========================================
+   ESTILOS GERAIS
+======================================== */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+}
+
+.proposta-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   ESTILOS DO CANVAS/MAPA
+======================================== */
+#mapCanvas {
+    border: 2px solid #e5e7eb;
+    background-color: #ffffff;
+    cursor: crosshair;
+    transition: box-shadow 0.3s;
+}
+
+#mapCanvas:hover {
+    box-shadow: 0 0 10px rgba(79, 70, 229, 0.5); /* Sombra roxa ao passar o mouse */
+}
+
+.camera-selected {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.7); /* Borda roxa para câmera selecionada */
+}
+
+.mode-button-active {
+    box-shadow: 0 0 0 2px #4F46E5 inset;
+}
+
+/* ========================================
+   ESTILOS DE IMPRESSÃO (A4 OTIMIZADO)
+======================================== */
+@media print {
+    /* Reset geral para impressão */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    body { 
+        background: white !important; 
+        margin: 0 !important;
+        padding: 15mm !important;
+        color: #000 !important;
+        font-family: 'Inter', Arial, sans-serif !important;
+        font-size: 11pt !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* Ocultar elementos não necessários na impressão */
+    .header, .inputs, .controls, .map-container, 
+    .btn-print, .btn-close, .floor-selector-container, 
+    .mode-selector, #editItemModal { 
+        display: none !important; 
+    }
+    
+    .proposta-container {
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        background: white !important;
+    }
+    
+    .proposta-section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 20pt !important;
+    }
+    
+    /* ========================================
+       RESET DE CLASSES TAILWIND PARA IMPRESSÃO
+    ======================================== */
+    .text-center { text-align: center !important; }
+    .text-left { text-align: left !important; }
+    .text-right { text-align: right !important; }
+    .font-bold { font-weight: bold !important; }
+    .font-semibold { font-weight: 600 !important; }
+    .font-medium { font-weight: 500 !important; }
+    .font-extrabold { font-weight: 800 !important; }
+    
+    /* Margens e espaçamentos */
+    .mb-1 { margin-bottom: 4pt !important; }
+    .mb-2 { margin-bottom: 8pt !important; }
+    .mb-3 { margin-bottom: 12pt !important; }
+    .mb-4 { margin-bottom: 16pt !important; }
+    .mb-6 { margin-bottom: 24pt !important; }
+    .mt-1 { margin-top: 4pt !important; }
+    .mt-2 { margin-top: 8pt !important; }
+    .mt-4 { margin-top: 16pt !important; }
+    .mt-6 { margin-top: 24pt !important; }
+    .p-2 { padding: 8pt !important; }
+    .p-3 { padding: 12pt !important; }
+    .p-4 { padding: 16pt !important; }
+    .pt-3 { padding-top: 12pt !important; }
+    .pt-6 { padding-top: 24pt !important; }
+    .pb-1 { padding-bottom: 4pt !important; }
+    .pb-4 { padding-bottom: 16pt !important; }
+    
+    /* Bordas e elementos visuais */
+    .border-b { border-bottom: 1px solid #e5e7eb !important; }
+    .border-t { border-top: 1px solid #e5e7eb !important; }
+    .border-t-2 { border-top: 2px solid #c7d2fe !important; }
+    .border-b-2 { border-bottom: 2px solid #e0e7ff !important; }
+    .border-l-4 { border-left: 4px solid #6366f1 !important; }
+    .border-2 { border: 2px solid !important; }
+    .rounded-lg { border-radius: 8pt !important; }
+    .rounded-sm { border-radius: 2pt !important; }
+    
+    /* ========================================
+       TIPOGRAFIA PARA IMPRESSÃO
+    ======================================== */
+    h1 {
+        color: #1e3a8a !important;
+        font-size: 20pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        margin: 0 0 12pt 0 !important;
+        border-bottom: 2px solid #1e3a8a !important;
+        padding-bottom: 8pt !important;
+    }
+    
+    h2 {
+        color: #1e3a8a !important;
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin: 20pt 0 12pt 0 !important;
+        border-bottom: 1px solid #d1d5db !important;
+        padding-bottom: 4pt !important;
+    }
+    
+    h3 {
+        color: #374151 !important;
+        font-size: 12pt !important;
+        font-weight: bold !important;
+        margin: 16pt 0 8pt 0 !important;
+    }
+    
+    p {
+        margin: 0 0 8pt 0 !important;
+        color: #374151 !important;
+    }
+    
+    /* ========================================
+       CORES DE TEXTO PARA IMPRESSÃO
+    ======================================== */
+    .text-gray-700 { color: #374151 !important; }
+    .text-gray-600 { color: #4b5563 !important; }
+    .text-gray-500 { color: #6b7280 !important; }
+    .text-indigo-800 { color: #1e3a8a !important; }
+    .text-indigo-700 { color: #1d4ed8 !important; }
+    .text-indigo-600 { color: #2563eb !important; }
+    .text-blue-800 { color: #1e40af !important; }
+    .text-red-500 { color: #ef4444 !important; }
+    
+    /* Cores de fundo */
+    .bg-gray-50 { background-color: #f9fafb !important; }
+    .bg-indigo-50 { background-color: #eff6ff !important; }
+    .bg-blue-50 { background-color: #eff6ff !important; }
+    
+    /* Cores de bordas */
+    .border-indigo-500 { border-color: #6366f1 !important; }
+    .border-indigo-200 { border-color: #c7d2fe !important; }
+    .border-blue-200 { border-color: #bfdbfe !important; }
+    .border-indigo-100 { border-color: #e0e7ff !important; }
+    
+    /* ========================================
+       TABELAS PARA IMPRESSÃO
+    ======================================== */
+    table { 
+        width: 100% !important; 
+        border-collapse: collapse !important;
+        margin: 12pt 0 !important;
+        font-size: 10pt !important;
+    }
+    
+    table th {
+        background-color: #f3f4f6 !important;
+        color: #374151 !important;
+        font-weight: bold !important;
+        padding: 6pt 8pt !important;
+        border: 1px solid #d1d5db !important;
+        text-align: left !important;
+    }
+    
+    table td {
+        padding: 6pt 8pt !important;
+        border: 1px solid #d1d5db !important;
+        vertical-align: top !important;
+        color: #374151 !important;
+    }
+    
+    table tr:nth-child(even) {
+        background-color: #f9fafb !important;
+    }
+    
+    /* ========================================
+       IMAGENS E MÍDIA PARA IMPRESSÃO
+    ======================================== */
+    img { 
+        max-width: 100% !important; 
+        height: auto !important; 
+        page-break-inside: avoid !important;
+    }
+    
+    /* ========================================
+       BOX DE TOTAIS E LAYOUT ESPECIAL
+    ======================================== */
+    .total-investimento {
+        background-color: #eff6ff !important;
+        border: 2px solid #1e3a8a !important;
+        padding: 12pt !important;
+        margin: 16pt 0 !important;
+        border-radius: 8pt !important;
+    }
+    
+    /* Layout flexível */
+    .flex.justify-between {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    
+    /* Remover sombras na impressão */
+    .shadow-inner, .shadow-lg, .shadow-md, .shadow-sm {
+        box-shadow: none !important;
+    }
+    
+    /* ========================================
+       LISTAS E ELEMENTOS ESPECIAIS
+    ======================================== */
+    ul.list-disc {
+        list-style-type: disc !important;
+        margin-left: 20pt !important;
+        margin-bottom: 12pt !important;
+    }
+    
+    ul.list-disc li {
+        margin-bottom: 4pt !important;
+    }
+    
+    /* Espaçamento vertical */
+    .space-y-1 > * + * { margin-top: 4pt !important; }
+    .space-y-2 > * + * { margin-top: 8pt !important; }
+    
+    /* Classes utilitárias */
+    .ml-6 { margin-left: 24pt !important; }
+    .gap-4 { gap: 16pt !important; }
+    
+    /* Força display block para divs */
+    .mb-2, .mb-3, .mb-4, .mb-6 {
+        display: block !important;
+    }
+    
+    /* ========================================
+       LARGURAS DE COLUNAS PARA TABELAS
+    ======================================== */
+    .w-1\/3 { width: 33.333% !important; }
+    .w-1\/12 { width: 8.333% !important; }
+    .w-1\/6 { width: 16.666% !important; }
+    
+    /* Alinhamento de texto específico para tabelas */
+    .text-center th, .text-center td { text-align: center !important; }
+    .text-right th, .text-right td { text-align: right !important; }
+    
+    /* Preservar quebras de linha */
+    .whitespace-pre-wrap { white-space: pre-wrap !important; }
+    
+    /* ========================================
+       QUEBRAS DE PÁGINA E RODAPÉ
+    ======================================== */
+    .page-break { page-break-before: always !important; }
+    
+    .proposta-section:nth-child(4) {
+        page-break-before: auto;
+    }
+    
+    .proposta-footer {
+        border-top: 2px solid #1e3a8a !important;
+        padding-top: 12pt !important;
+        margin-top: 24pt !important;
+        text-align: center !important;
+        font-size: 9pt !important;
+        color: #6b7280 !important;
+    }
+    
+    /* ========================================
+       TAMANHOS DE FONTE RESPONSIVOS
+    ======================================== */
+    .text-xs { font-size: 9pt !important; }
+    .text-sm { font-size: 10pt !important; }
+    .text-base { font-size: 11pt !important; }
+    .text-lg { font-size: 12pt !important; }
+    .text-xl { font-size: 14pt !important; }
+    .text-2xl { font-size: 16pt !important; }
+    .text-3xl { font-size: 18pt !important; }
+}

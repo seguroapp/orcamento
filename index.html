@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orçamento Visual CFTV</title>
+    
+    <!-- Tailwind CSS para design responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Cabeçalho da Aplicação -->
+    <header class="header text-center mb-8">
+        <h1 class="text-3xl font-extrabold text-indigo-700">Gerador de Orçamento Visual CFTV</h1>
+        <p class="text-gray-600 mt-1">Crie o projeto e a proposta em um só lugar.</p>
+    </header>
+
+    <!-- Container Principal -->
+    <div id="mainApp" class="flex flex-col lg:flex-row gap-8 bg-white p-6 rounded-xl shadow-lg">
+
+        <!-- Painel de Controle e Orçamento -->
+        <div class="inputs w-full lg:w-1/3 space-y-6">
+
+            <!-- Informações Básicas -->
+            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold mb-3 text-indigo-600">Detalhes da Proposta</h2>
+                <input type="text" id="clientName" placeholder="Nome do Cliente" 
+                       class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 mb-2">
+                <textarea id="projectNotes" placeholder="Observações do Projeto (Ex: Foco em áreas externas e portaria)" 
+                          class="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 h-20"></textarea>
+            </div>
+
+            <!-- Controle de Câmeras (Mapa) -->
+            <div class="controls bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold mb-3 text-indigo-600">Posicionamento Visual</h2>
+                
+                <!-- Seletor de Andar -->
+                <div class="floor-selector-container flex items-center justify-between mb-4">
+                    <label for="floorSelector" class="font-medium text-gray-700">Andar:</label>
+                    <select id="floorSelector" class="p-2 border rounded-md">
+                        <option value="1">Andar 1</option>
+                        <option value="2">Andar 2</option>
+                        <option value="3">Andar 3</option>
+                    </select>
+                </div>
+
+                <!-- Modo de Edição -->
+                <div class="mode-selector mb-3 p-2 bg-indigo-100 rounded-md">
+                    <h3 class="text-sm font-semibold mb-1 text-indigo-700">Modo de Edição</h3>
+                    <div class="flex gap-2">
+                        <button id="modeCameraBtn" class="mode-button-active flex-1 p-2 text-white bg-indigo-500 rounded-md hover:bg-indigo-600 transition">
+                            Câmera (Posicionar)
+                        </button>
+                        <button id="modeWallBtn" class="flex-1 p-2 text-indigo-700 bg-white border border-indigo-500 rounded-md hover:bg-indigo-100 transition">
+                            Parede (Desenhar/Remover)
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Instruções do Modo -->
+                <p id="modeInstruction" class="text-gray-700 text-sm mb-2">
+                    Clique no mapa para adicionar câmeras, ou clique e arraste para movê-las.
+                </p>
+
+                <!-- Controles de Câmera -->
+                <div id="cameraControls" class="space-y-2 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <label for="cameraType" class="font-medium">Tipo:</label>
+                        <select id="cameraType" class="p-1 border rounded-md">
+                            <option value="dome">DOME (Interna)</option>
+                            <option value="bullet">BULLET (Externa)</option>
+                            <option value="ptz">PTZ (Giratória)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label for="coverageAngle" class="font-medium">Ângulo Visão (Graus):</label>
+                        <input type="number" id="coverageAngle" value="90" min="30" max="180" 
+                               class="p-1 border rounded-md w-16 text-center">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label for="coverageRange" class="font-medium">Alcance (Metros):</label>
+                        <input type="range" id="coverageRange" value="50" min="20" max="100" class="w-full">
+                        <span id="rangeValue" class="text-xs w-8 text-right">50m</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <label for="rotationAngle" class="font-medium">Orientação (Graus):</label>
+                        <input type="range" id="rotationAngle" value="0" min="0" max="360" class="w-full">
+                        <span id="rotationValue" class="text-xs w-8 text-right">0°</span>
+                    </div>
+                    
+                    <!-- Botões de Ação -->
+                    <button id="clearMapBtn" class="w-full mt-2 bg-red-500 text-white p-2 rounded-lg hover:bg-red-600 transition">
+                        Limpar Mapa do Andar
+                    </button>
+                    <button id="removeSelectedCameraBtn" class="w-full mt-2 bg-yellow-500 text-white p-2 rounded-lg hover:bg-yellow-600 transition hidden">
+                        Remover Câmera Selecionada
+                    </button>
+                    <button id="undoLastWallBtn" class="w-full mt-2 bg-pink-500 text-white p-2 rounded-lg hover:bg-pink-600 transition hidden">
+                        Desfazer Última Parede
+                    </button>
+                </div>
+            </div>
+
+            <!-- Itens do Orçamento -->
+            <div class="bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold mb-3 text-indigo-600">Itens do Orçamento</h2>
+                
+                <!-- Formulário de Adição -->
+                <form id="addItemForm" class="space-y-2 mb-4">
+                    <input type="text" id="itemName" placeholder="Descrição (Ex: Câmera IP 4MP)" 
+                           class="w-full p-2 border rounded-md">
+                    <input type="text" id="itemImageUrl" placeholder="URL da Imagem (Opcional)" 
+                           class="w-full p-2 border rounded-md">
+                    <div class="flex gap-2">
+                        <input type="number" id="itemQty" placeholder="Qtd" value="1" min="1" 
+                               class="w-1/4 p-2 border rounded-md">
+                        <input type="number" id="itemPrice" placeholder="Valor Unitário (R$)" min="0" step="0.01" 
+                               class="w-3/4 p-2 border rounded-md">
+                    </div>
+                    <select id="itemCategory" class="w-full p-2 border rounded-md">
+                        <option value="equipamento">Equipamento</option>
+                        <option value="servico">Mão de Obra / Serviço</option>
+                        <option value="acessorio">Acessório / Material</option>
+                    </select>
+                    <button type="submit" class="w-full bg-indigo-500 text-white p-2 rounded-lg hover:bg-indigo-600 transition">
+                        Adicionar Item
+                    </button>
+                </form>
+
+                <!-- Lista de Itens -->
+                <div id="budgetList" class="space-y-2 max-h-48 overflow-y-auto pr-2">
+                    <!-- Itens serão inseridos dinamicamente aqui -->
+                </div>
+
+                <!-- Total -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-lg font-bold flex justify-between">
+                        Total Estimado: 
+                        <span id="totalBudget" class="text-indigo-700">R$ 0,00</span>
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Botão Gerar Proposta -->
+            <button id="generateProposalBtn" class="w-full bg-green-600 text-white p-3 rounded-xl font-bold text-lg shadow-md hover:bg-green-700 transition">
+                Gerar Proposta Final
+            </button>
+        </div>
+
+        <!-- Mapa Visual de Cobertura -->
+        <div class="map-container w-full lg:w-2/3 bg-gray-100 p-6 rounded-xl shadow-lg flex flex-col items-center">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800">Mapa de Cobertura (Simulação 2D)</h2>
+            <div class="relative w-full aspect-video max-w-xl">
+                <canvas id="mapCanvas" width="800" height="450" class="w-full h-full rounded-lg"></canvas>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+                Andar Atual: <span id="currentFloorName" class="font-bold">Andar 1</span> | 
+                Câmeras no Andar: <span id="currentCameraCount" class="font-bold">0</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal da Proposta -->
+    <div id="proposalModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden overflow-y-auto">
+        <div class="proposta-container rounded-lg">
+            <div id="proposalContent" class="proposta-content">
+                <!-- Conteúdo da proposta será gerado dinamicamente aqui -->
+            </div>
+            <div class="flex justify-end space-x-4 mt-8">
+                <button id="btnCloseProposal" class="btn-close bg-gray-500 text-white p-3 rounded-lg hover:bg-gray-600 transition">
+                    Fechar
+                </button>
+                <button onclick="window.print()" class="btn-print bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition">
+                    Imprimir / Salvar PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Item -->
+    <div id="editItemModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 hidden flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-indigo-700 mb-4">Editar Item do Orçamento</h3>
+            <form id="editItemForm" class="space-y-3">
+                <input type="hidden" id="editItemId">
+                <input type="text" id="editItemName" placeholder="Descrição" 
+                       class="w-full p-2 border rounded-md" required>
+                <input type="text" id="editItemImageUrl" placeholder="URL da Imagem (Opcional)" 
+                       class="w-full p-2 border rounded-md">
+                <div class="flex gap-2">
+                    <input type="number" id="editItemQty" placeholder="Qtd" min="1" step="1" 
+                           class="w-1/3 p-2 border rounded-md" required>
+                    <input type="number" id="editItemPrice" placeholder="Valor Unitário (R$)" min="0" step="0.01" 
+                           class="w-2/3 p-2 border rounded-md" required>
+                </div>
+                <select id="editItemCategory" class="w-full p-2 border rounded-md" required>
+                    <option value="equipamento">Equipamento</option>
+                    <option value="servico">Mão de Obra / Serviço</option>
+                    <option value="acessorio">Acessório / Material</option>
+                </select>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="flex-1 bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="saveEditedItem()" 
+                            class="flex-1 bg-indigo-500 text-white p-2 rounded-lg hover:bg-indigo-600 transition">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts da Aplicação -->
+    <script type="module" src="js/app.js"></script>
+
+</body>
+</html>

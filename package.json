@@ -1,0 +1,44 @@
+{
+  "name": "cftv-visual-budget",
+  "version": "1.0.0",
+  "description": "Sistema profissional para geração de orçamentos visuais de sistemas de CFTV (Circuito Fechado de TV) com mapeamento 2D e propostas técnicas detalhadas.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "format": "prettier --write .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seguroapp/orcamento.git"
+  },
+  "keywords": [
+    "cftv",
+    "budget",
+    "visual",
+    "canvas",
+    "typescript",
+    "security"
+  ],
+  "author": "SeguroApp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seguroapp/orcamento/issues"
+  },
+  "homepage": "https://github.com/seguroapp/orcamento#readme",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
+  }
+}

@@ -63,19 +63,22 @@ body {
         margin: 0 !important;
         padding: 15mm !important;
         color: #000 !important;
-        font-family: 'Inter', Arial, sans-serif !important;
+        font-family: 'Arial', sans-serif !important;
         font-size: 11pt !important;
         line-height: 1.4 !important;
     }
     
-    /* Ocultar elementos não necessários na impressão */
-    .header, .inputs, .controls, .map-container, 
-    .btn-print, .btn-close, .floor-selector-container, 
-    .mode-selector, #editItemModal { 
+    /* Ocultar elementos de interface na impressão */
+    .header, .controls-panel, .canvas-section, .budget-section, 
+    .tool-btn, .mode-selector, .camera-type-selector, .quick-actions,
+    #budgetModal, .container > .grid, button, input, select, textarea,
+    .canvas-container, #canvasInfo, #modeInstructions { 
         display: none !important; 
     }
     
-    .proposta-container {
+    /* Mostrar apenas a seção de proposta na impressão */
+    .proposal-print-only {
+        display: block !important;
         max-width: none !important;
         width: 100% !important;
         margin: 0 !important;

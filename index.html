@@ -123,6 +123,11 @@
                 <button id="generateProposal" class="w-full mt-4 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold">
                     Gerar Proposta Comercial
                 </button>
+
+                <!-- Botão de Configurar Dados -->
+                <button id="configureProposal" class="w-full mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+                    Configurar Dados da Proposta
+                </button>
             </div>
         </div>
     </div>
@@ -184,6 +189,249 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar Dados da Proposta -->
+    <div id="proposalConfigModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Configurar Dados da Proposta</h3>
+            
+            <form id="proposalConfigForm" class="space-y-6">
+                <!-- Dados da Empresa -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">Dados da Empresa:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+                            <input type="text" id="configCompanyName" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="Sua Empresa de Segurança Eletrônica">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            <input type="text" id="configCompanyPhone" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="(11) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                            <input type="email" id="configCompanyEmail" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="contato@empresa.com.br">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                            <input type="text" id="configCompanyCNPJ" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="00.000.000/0001-00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados do Cliente -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">Dados do Cliente:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome/Empresa</label>
+                            <input type="text" id="configClientName" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="Nome ou Razão Social">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ</label>
+                            <input type="text" id="configClientDocument" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="000.000.000-00">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            <input type="text" id="configClientPhone" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="(11) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                            <input type="email" id="configClientEmail" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="cliente@email.com">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Completo</label>
+                        <textarea id="configClientAddress" rows="2"
+                                  class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                  placeholder="Rua, nº, bairro, cidade, CEP"></textarea>
+                    </div>
+                </div>
+
+                <!-- Configurações da Proposta -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">Configurações da Proposta:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Validade (dias)</label>
+                            <input type="number" id="configProposalValidity" min="1" max="90" value="15"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Prazo de Entrega</label>
+                            <input type="text" id="configDeliveryTime" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="5 a 10 dias úteis" value="5 a 10 dias úteis">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões do Modal -->
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancelProposalConfig" 
+                            class="flex-1 bg-gray-300 text-gray-700 p-2 rounded-lg hover:bg-gray-400 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="saveProposalConfig"
+                            class="flex-1 bg-indigo-500 text-white p-2 rounded-lg hover:bg-indigo-600 transition">
+                        Salvar Configurações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Seção de Proposta Comercial (Visível apenas na impressão) -->
+    <div id="proposalSection" class="proposal-print-only" style="display: none;">
+        <!-- Cabeçalho da Proposta -->
+        <div class="proposal-header text-center mb-6">
+            <h1 class="text-2xl font-bold text-indigo-800 mb-2">PROPOSTA COMERCIAL</h1>
+            <h2 class="text-lg font-semibold text-gray-700">Sistema de CFTV - Circuito Fechado de TV</h2>
+            <div class="border-b-2 border-indigo-200 mt-4"></div>
+        </div>
+
+        <!-- Informações da Empresa -->
+        <div class="company-info bg-gray-50 p-4 rounded-lg mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Dados da Empresa:</h3>
+                    <p><strong>Empresa:</strong> <span id="proposalCompanyName">Sua Empresa de Segurança Eletrônica</span></p>
+                    <p><strong>Telefone:</strong> <span id="proposalCompanyPhone">(11) 99999-9999</span></p>
+                    <p><strong>E-mail:</strong> <span id="proposalCompanyEmail">contato@empresa.com.br</span></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Dados da Proposta:</h3>
+                    <p><strong>Data:</strong> <span id="proposalDate"></span></p>
+                    <p><strong>Proposta Nº:</strong> <span id="proposalNumber"></span></p>
+                    <p><strong>Validade:</strong> <span id="proposalValidity">15 dias</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dados do Cliente -->
+        <div class="client-info bg-indigo-50 p-4 rounded-lg mb-6">
+            <h3 class="font-semibold text-indigo-800 mb-3">Dados do Cliente:</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <p><strong>Nome/Empresa:</strong> <span id="clientName">_________________________</span></p>
+                    <p><strong>CNPJ/CPF:</strong> <span id="clientDocument">_________________________</span></p>
+                </div>
+                <div>
+                    <p><strong>Telefone:</strong> <span id="clientPhone">_________________________</span></p>
+                    <p><strong>E-mail:</strong> <span id="clientEmail">_________________________</span></p>
+                </div>
+            </div>
+            <p class="mt-2"><strong>Endereço:</strong> <span id="clientAddress">_________________________________________________________</span></p>
+        </div>
+
+        <!-- Projeto Visual -->
+        <div class="project-visual mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Layout do Projeto:</h3>
+            <div class="canvas-print-container border-2 border-gray-300 rounded-lg p-4 bg-white">
+                <canvas id="printCanvas" width="800" height="450" class="w-full border rounded"></canvas>
+                <p class="text-sm text-gray-600 mt-2 text-center">
+                    Disposição das câmeras conforme projeto elaborado
+                </p>
+            </div>
+        </div>
+
+        <!-- Lista de Itens do Orçamento -->
+        <div class="budget-section mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Discriminação dos Itens:</h3>
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="border border-gray-300 p-2 text-left">Item</th>
+                        <th class="border border-gray-300 p-2 text-left">Descrição</th>
+                        <th class="border border-gray-300 p-2 text-center">Qtd</th>
+                        <th class="border border-gray-300 p-2 text-right">Valor Unit.</th>
+                        <th class="border border-gray-300 p-2 text-right">Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody id="proposalBudgetTable">
+                    <!-- Itens serão inseridos aqui -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Total do Investimento -->
+        <div class="total-section mb-6">
+            <div class="total-investimento text-center">
+                <h3 class="text-lg font-bold text-indigo-800 mb-2">VALOR TOTAL DO INVESTIMENTO</h3>
+                <div class="text-3xl font-bold text-indigo-900" id="proposalTotalValue">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- Especificações Técnicas -->
+        <div class="specs-section mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Especificações Técnicas:</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <ul class="list-disc ml-6 space-y-1 text-sm">
+                    <li>Câmeras IP com resolução Full HD (1080p)</li>
+                    <li>Gravador NVR com armazenamento em HD</li>
+                    <li>Visualização remota via aplicativo móvel</li>
+                    <li>Gravação contínua e por detecção de movimento</li>
+                    <li>Backup automático e manual dos vídeos</li>
+                    <li>Sistema de alarme integrado</li>
+                    <li>Garantia de 12 meses para equipamentos</li>
+                    <li>Suporte técnico especializado</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Termos e Condições -->
+        <div class="terms-section mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Condições Comerciais:</h3>
+            <div class="text-sm space-y-2">
+                <p><strong>Forma de Pagamento:</strong> À vista com desconto ou parcelado conforme negociação</p>
+                <p><strong>Prazo de Entrega:</strong> 5 a 10 dias úteis após confirmação do pedido</p>
+                <p><strong>Instalação:</strong> Incluída no valor, realizada por técnicos especializados</p>
+                <p><strong>Garantia:</strong> 12 meses para equipamentos e 6 meses para serviços</p>
+                <p><strong>Validade da Proposta:</strong> 15 dias corridos</p>
+            </div>
+        </div>
+
+        <!-- Observações -->
+        <div class="observations-section mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Observações Importantes:</h3>
+            <div class="text-sm bg-yellow-50 p-4 rounded-lg">
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Os preços estão sujeitos a alteração sem aviso prévio</li>
+                    <li>Frete não incluso (será calculado conforme localização)</li>
+                    <li>Instalação em locais de difícil acesso pode ter custo adicional</li>
+                    <li>Infraestrutura elétrica e de rede por conta do cliente</li>
+                    <li>Projeto sujeito a visita técnica para confirmação</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rodapé da Proposta -->
+        <div class="proposal-footer text-center border-t-2 border-indigo-200 pt-4">
+            <p class="text-sm text-gray-600">
+                Agradecemos a oportunidade de apresentar esta proposta.<br>
+                Estamos à disposição para esclarecimentos adicionais.
+            </p>
+            <div class="mt-4 text-xs text-gray-500">
+                Documento gerado automaticamente pelo Sistema CFTV Visual Budget
+            </div>
         </div>
     </div>
 

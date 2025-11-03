@@ -437,7 +437,90 @@ export class CFTVApp {
    * Gera proposta comercial
    */
   private generateProposal(): void {
-    window.print();
+    this.prepareProposalData();
+    
+    // Pequeno delay para garantir que tudo foi renderizado
+    setTimeout(() => {
+      window.print();
+    }, 300);
+  }
+
+  /**
+   * Prepara os dados da proposta para impressão
+   */
+  private prepareProposalData(): void {
+    const proposalSection = document.getElementById('proposalSection');
+    if (!proposalSection) return;
+
+    // Mostra a seção de proposta
+    proposalSection.style.display = 'block';
+
+    // Atualiza data da proposta
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('pt-BR');
+    const proposalNumber = `CFTV-${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}-${now.getTime().toString().slice(-4)}`;
+    
+    this.updateElementText('proposalDate', dateStr);
+    this.updateElementText('proposalNumber', proposalNumber);
+
+    // Copia canvas para impressão
+    this.copyCanvasToProposal();
+
+    // Popula tabela de orçamento
+    this.populateProposalBudgetTable();
+
+    // Atualiza total
+    const total = this.state.budgetItems.reduce((sum, item) => sum + item.totalPrice, 0);
+    this.updateElementText('proposalTotalValue', this.formatCurrency(total));
+  }
+
+  /**
+   * Copia o canvas principal para o canvas de impressão
+   */
+  private copyCanvasToProposal(): void {
+    const printCanvas = document.getElementById('printCanvas') as HTMLCanvasElement;
+    if (!printCanvas) return;
+
+    printCanvas.width = this.canvas.width;
+    printCanvas.height = this.canvas.height;
+
+    const printCtx = printCanvas.getContext('2d');
+    if (!printCtx) return;
+
+    // Copia o conteúdo do canvas principal
+    printCtx.drawImage(this.canvas, 0, 0);
+  }
+
+  /**
+   * Popula a tabela de orçamento na proposta
+   */
+  private populateProposalBudgetTable(): void {
+    const tableBody = document.getElementById('proposalBudgetTable');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+
+    this.state.budgetItems.forEach((item, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="border border-gray-300 p-2 text-center">${index + 1}</td>
+        <td class="border border-gray-300 p-2">${item.description}</td>
+        <td class="border border-gray-300 p-2 text-center">${item.quantity}</td>
+        <td class="border border-gray-300 p-2 text-right">${this.formatCurrency(item.unitPrice)}</td>
+        <td class="border border-gray-300 p-2 text-right">${this.formatCurrency(item.totalPrice)}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  /**
+   * Formata valor como moeda brasileira
+   */
+  private formatCurrency(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
   }
 
   /**
@@ -495,5 +578,15 @@ export class CFTVApp {
    */
   public getState(): Readonly<AppState> {
     return { ...this.state };
+  }
+
+  /**
+   * Atualiza texto de um elemento
+   */
+  private updateElementText(id: string, text: string): void {
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = text;
+    }
   }
 }

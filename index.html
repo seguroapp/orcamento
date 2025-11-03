@@ -29,15 +29,18 @@
                 <!-- Seleção de Modo -->
                 <div class="mode-selector">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Modo de Edição</label>
-                    <div class="flex space-x-2">
-                        <button id="selectMode" class="tool-btn flex-1 p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="selectMode" class="tool-btn p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-sm">
                             Selecionar
                         </button>
-                        <button id="cameraMode" class="tool-btn flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                        <button id="cameraMode" class="tool-btn p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm">
                             Câmera
                         </button>
-                        <button id="wallMode" class="tool-btn flex-1 p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
+                        <button id="wallMode" class="tool-btn p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm">
                             Parede
+                        </button>
+                        <button id="deleteMode" class="tool-btn p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm">
+                            Excluir
                         </button>
                     </div>
                 </div>
@@ -94,6 +97,66 @@
                     <p class="text-sm text-blue-800">
                         Clique para selecionar e mover câmeras.
                     </p>
+                </div>
+
+                <!-- Controles da Câmera Selecionada -->
+                <div id="cameraControls" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Controles da Câmera</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Posição -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Posição</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-xs text-gray-600">X:</label>
+                                    <input type="number" id="cameraX" min="0" max="800" 
+                                           class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-600">Y:</label>
+                                    <input type="number" id="cameraY" min="0" max="450" 
+                                           class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ângulo de Visão -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Ângulo de Visão: <span id="angleValue">90°</span>
+                            </label>
+                            <input type="range" id="cameraAngle" min="30" max="180" value="90" step="15"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        </div>
+
+                        <!-- Alcance -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Alcance: <span id="rangeValue">50px</span>
+                            </label>
+                            <input type="range" id="cameraRange" min="20" max="100" value="50" step="5"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        </div>
+
+                        <!-- Rotação -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Rotação: <span id="rotationValue">0°</span>
+                            </label>
+                            <input type="range" id="cameraRotation" min="0" max="360" value="0" step="15"
+                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        </div>
+                    </div>
+
+                    <!-- Botões de Ação -->
+                    <div class="flex space-x-2 mt-4">
+                        <button id="updateCamera" class="flex-1 p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-sm">
+                            Aplicar Mudanças
+                        </button>
+                        <button id="deleteCamera" class="flex-1 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm">
+                            Remover Câmera
+                        </button>
+                    </div>
                 </div>
             </div>
 

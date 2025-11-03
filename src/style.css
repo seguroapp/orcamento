@@ -35,6 +35,61 @@
   background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 
+/* Estilos para sliders */
+.slider {
+  background: linear-gradient(to right, #e5e7eb 0%, #e5e7eb 100%);
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slider::-moz-range-thumb {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para controles de câmera */
+#cameraControls {
+  animation: slideDown 0.3s ease-out;
+  border-left: 4px solid var(--primary-color);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modos visuais diferentes */
+.tool-btn[data-mode="delete"].active {
+  background-color: var(--danger-color) !important;
+}
+
+.tool-btn[data-mode="camera"].active {
+  background-color: var(--success-color) !important;
+}
+
+.tool-btn[data-mode="wall"].active {
+  background-color: var(--warning-color) !important;
+}
+
 /* Loading spinner */
 .loading {
   border: 3px solid #f3f3f3;
@@ -48,4 +103,20 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Melhorias nos inputs dos controles */
+#cameraControls input[type="number"] {
+  transition: border-color 0.2s;
+}
+
+#cameraControls input[type="number"]:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Status da parede sendo desenhada */
+.drawing-wall {
+  background-color: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(249, 115, 22, 0.3) !important;
 }

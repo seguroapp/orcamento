@@ -98,10 +98,12 @@ export interface AppState {
   walls: Wall[];
   budgetItems: BudgetItem[];
   nextCameraId: number;
+  nextWallId: number;
   selectedCamera: Camera | null;
   currentFloor: FloorLevel;
   isDrawingWall: boolean;
   isAddingCamera: boolean;
+  wallStartPoint: Point2D | null;
   currentTool: 'select' | 'camera' | 'wall' | 'delete';
   canvas: {
     scale: number;

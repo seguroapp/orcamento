@@ -33,10 +33,12 @@ export class CFTVApp {
       walls: [],
       budgetItems: [...DEFAULT_BUDGET_ITEMS],
       nextCameraId: 1,
+      nextWallId: 1,
       selectedCamera: null,
       currentFloor: 1,
       isDrawingWall: false,
       isAddingCamera: false,
+      wallStartPoint: null,
       currentTool: 'select',
       canvas: {
         scale: 1,
@@ -68,11 +70,13 @@ export class CFTVApp {
   private validateElements(): void {
     const requiredElements = [
       'mapCanvas',
-      'selectMode', 'cameraMode', 'wallMode',
+      'selectMode', 'cameraMode', 'wallMode', 'deleteMode',
       'cameraType',
       'clearCanvas', 'exportCanvas',
       'budgetList', 'totalBudget',
-      'addBudgetItem', 'generateProposal'
+      'addBudgetItem', 'generateProposal',
+      'cameraControls', 'cameraX', 'cameraY', 'cameraAngle', 'cameraRange', 'cameraRotation',
+      'updateCamera', 'deleteCamera'
     ];
 
     const missingElements = requiredElements.filter(id => !document.getElementById(id));
@@ -108,14 +112,30 @@ export class CFTVApp {
     this.getElementById('selectMode').addEventListener('click', () => this.setMode('select'));
     this.getElementById('cameraMode').addEventListener('click', () => this.setMode('camera'));
     this.getElementById('wallMode').addEventListener('click', () => this.setMode('wall'));
+    this.getElementById('deleteMode').addEventListener('click', () => this.setMode('delete'));
 
     // Canvas events
     this.canvas.addEventListener('click', this.handleCanvasClick.bind(this));
     this.canvas.addEventListener('mousemove', this.handleCanvasMouseMove.bind(this));
+    this.canvas.addEventListener('mousedown', this.handleCanvasMouseDown.bind(this));
+    this.canvas.addEventListener('mouseup', this.handleCanvasMouseUp.bind(this));
 
     // Botões de ação
     this.getElementById('clearCanvas').addEventListener('click', this.clearCanvas.bind(this));
     this.getElementById('exportCanvas').addEventListener('click', this.exportCanvas.bind(this));
+
+    // Controles de câmera
+    this.getElementById('updateCamera').addEventListener('click', this.updateSelectedCamera.bind(this));
+    this.getElementById('deleteCamera').addEventListener('click', this.deleteSelectedCamera.bind(this));
+    
+    // Sliders de controle da câmera
+    this.getElementById('cameraAngle').addEventListener('input', this.updateAngleDisplay.bind(this));
+    this.getElementById('cameraRange').addEventListener('input', this.updateRangeDisplay.bind(this));
+    this.getElementById('cameraRotation').addEventListener('input', this.updateRotationDisplay.bind(this));
+    
+    // Inputs de posição
+    this.getElementById('cameraX').addEventListener('input', this.updateCameraPosition.bind(this));
+    this.getElementById('cameraY').addEventListener('input', this.updateCameraPosition.bind(this));
 
     // Orçamento
     this.getElementById('addBudgetItem').addEventListener('click', this.showBudgetModal.bind(this));
@@ -163,9 +183,102 @@ export class CFTVApp {
         this.selectCamera(x, y);
         break;
       case 'wall':
-        // TODO: Implementar desenho de paredes
+        this.handleWallDrawing(x, y);
+        break;
+      case 'delete':
+        this.deleteAtPosition(x, y);
         break;
     }
+  }
+
+  /**
+   * Manipula desenho de paredes
+   */
+  private handleWallDrawing(x: number, y: number): void {
+    if (!this.state.isDrawingWall) {
+      // Início do desenho da parede
+      this.state.wallStartPoint = { x, y };
+      this.state.isDrawingWall = true;
+      console.log('🟠 Iniciando desenho de parede em:', { x, y });
+    } else {
+      // Fim do desenho da parede
+      if (this.state.wallStartPoint) {
+        this.addWall(this.state.wallStartPoint.x, this.state.wallStartPoint.y, x, y);
+        this.state.isDrawingWall = false;
+        this.state.wallStartPoint = null;
+        console.log('✅ Parede criada');
+      }
+    }
+  }
+
+  /**
+   * Adiciona uma parede
+   */
+  private addWall(startX: number, startY: number, endX: number, endY: number): void {
+    const wall = {
+      id: this.state.nextWallId++,
+      startX,
+      startY,
+      endX,
+      endY,
+      thickness: 5,
+      floor: this.state.currentFloor,
+      type: 'wall' as const,
+    };
+
+    this.state.walls.push(wall);
+    this.drawCanvas();
+    console.log('🧱 Parede adicionada:', wall);
+  }
+
+  /**
+   * Remove elemento na posição clicada
+   */
+  private deleteAtPosition(x: number, y: number): void {
+    // Primeiro tenta remover câmera
+    const cameraIndex = this.state.cameras.findIndex(camera => {
+      const distance = Math.sqrt((camera.x - x) ** 2 + (camera.y - y) ** 2);
+      return distance <= CAMERA_CONFIG.sizes[camera.type];
+    });
+
+    if (cameraIndex !== -1) {
+      const removedCamera = this.state.cameras.splice(cameraIndex, 1)[0];
+      this.state.selectedCamera = null;
+      this.hideCameraControls();
+      this.drawCanvas();
+      this.updateCameraCount();
+      console.log('🗑️ Câmera removida:', removedCamera);
+      return;
+    }
+
+    // Se não encontrou câmera, tenta remover parede
+    const wallIndex = this.state.walls.findIndex(wall => {
+      const distance = this.distanceToLineSegment(x, y, wall.startX, wall.startY, wall.endX, wall.endY);
+      return distance <= 8; // tolerância para clicar na parede
+    });
+
+    if (wallIndex !== -1) {
+      const removedWall = this.state.walls.splice(wallIndex, 1)[0];
+      this.drawCanvas();
+      console.log('🗑️ Parede removida:', removedWall);
+    }
+  }
+
+  /**
+   * Calcula distância de um ponto a um segmento de linha
+   */
+  private distanceToLineSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number): number {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    
+    if (length === 0) return Math.sqrt((px - x1) ** 2 + (py - y1) ** 2);
+    
+    const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / (length * length)));
+    const projectionX = x1 + t * dx;
+    const projectionY = y1 + t * dy;
+    
+    return Math.sqrt((px - projectionX) ** 2 + (py - projectionY) ** 2);
   }
 
   /**
@@ -181,6 +294,58 @@ export class CFTVApp {
     if (coordsElement) {
       coordsElement.textContent = `X: ${x}, Y: ${y}`;
     }
+
+    // Se estiver desenhando parede, mostra linha de preview
+    if (this.state.isDrawingWall && this.state.wallStartPoint) {
+      this.drawCanvas();
+      this.drawWallPreview(this.state.wallStartPoint.x, this.state.wallStartPoint.y, x, y);
+    }
+  }
+
+  /**
+   * Manipula início de drag no canvas
+   */
+  private handleCanvasMouseDown(event: MouseEvent): void {
+    if (this.state.currentTool === 'select' && this.state.selectedCamera) {
+      const rect = this.canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      const distance = Math.sqrt(
+        (this.state.selectedCamera.x - x) ** 2 + 
+        (this.state.selectedCamera.y - y) ** 2
+      );
+      
+      if (distance <= CAMERA_CONFIG.sizes[this.state.selectedCamera.type]) {
+        this.state.canvas.isDragging = true;
+        this.canvas.style.cursor = 'grabbing';
+      }
+    }
+  }
+
+  /**
+   * Manipula fim de drag no canvas
+   */
+  private handleCanvasMouseUp(): void {
+    if (this.state.canvas.isDragging) {
+      this.state.canvas.isDragging = false;
+      this.canvas.style.cursor = 'crosshair';
+      this.updateCameraControlsFromSelected();
+    }
+  }
+
+  /**
+   * Desenha preview da parede sendo desenhada
+   */
+  private drawWallPreview(startX: number, startY: number, endX: number, endY: number): void {
+    this.ctx.strokeStyle = '#EF4444';
+    this.ctx.lineWidth = 3;
+    this.ctx.setLineDash([5, 5]);
+    this.ctx.beginPath();
+    this.ctx.moveTo(startX, startY);
+    this.ctx.lineTo(endX, endY);
+    this.ctx.stroke();
+    this.ctx.setLineDash([]);
   }
 
   /**
@@ -215,6 +380,16 @@ export class CFTVApp {
    * Seleciona uma câmera
    */
   private selectCamera(x: number, y: number): void {
+    // Se estiver arrastando uma câmera, move ela
+    if (this.state.canvas.isDragging && this.state.selectedCamera) {
+      this.state.selectedCamera.x = x;
+      this.state.selectedCamera.y = y;
+      this.drawCanvas();
+      this.updateCameraControlsFromSelected();
+      return;
+    }
+
+    // Senão, procura câmera para selecionar
     const clickedCamera = this.state.cameras.find(camera => {
       const distance = Math.sqrt((camera.x - x) ** 2 + (camera.y - y) ** 2);
       return distance <= CAMERA_CONFIG.sizes[camera.type];
@@ -224,7 +399,131 @@ export class CFTVApp {
     this.drawCanvas();
     
     if (clickedCamera) {
+      this.showCameraControls(clickedCamera);
       console.log('🎯 Câmera selecionada:', clickedCamera);
+    } else {
+      this.hideCameraControls();
+    }
+  }
+
+  /**
+   * Mostra controles da câmera selecionada
+   */
+  private showCameraControls(camera: Camera): void {
+    const controlsPanel = this.getElementById('cameraControls');
+    controlsPanel.classList.remove('hidden');
+    
+    // Preenche os controles com os valores da câmera
+    (this.getElementById('cameraX') as HTMLInputElement).value = camera.x.toString();
+    (this.getElementById('cameraY') as HTMLInputElement).value = camera.y.toString();
+    (this.getElementById('cameraAngle') as HTMLInputElement).value = camera.angle.toString();
+    (this.getElementById('cameraRange') as HTMLInputElement).value = camera.range.toString();
+    (this.getElementById('cameraRotation') as HTMLInputElement).value = (camera.angle || 0).toString();
+    
+    // Atualiza os displays
+    this.updateAngleDisplay();
+    this.updateRangeDisplay();
+    this.updateRotationDisplay();
+  }
+
+  /**
+   * Esconde controles da câmera
+   */
+  private hideCameraControls(): void {
+    const controlsPanel = this.getElementById('cameraControls');
+    controlsPanel.classList.add('hidden');
+  }
+
+  /**
+   * Atualiza controles baseado na câmera selecionada
+   */
+  private updateCameraControlsFromSelected(): void {
+    if (this.state.selectedCamera) {
+      this.showCameraControls(this.state.selectedCamera);
+    }
+  }
+
+  /**
+   * Atualiza display do ângulo
+   */
+  private updateAngleDisplay(): void {
+    const angleSlider = this.getElementById('angleValue');
+    const angle = (this.getElementById('cameraAngle') as HTMLInputElement).value;
+    angleSlider.textContent = `${angle}°`;
+  }
+
+  /**
+   * Atualiza display do alcance
+   */
+  private updateRangeDisplay(): void {
+    const rangeSlider = this.getElementById('rangeValue');
+    const range = (this.getElementById('cameraRange') as HTMLInputElement).value;
+    rangeSlider.textContent = `${range}px`;
+  }
+
+  /**
+   * Atualiza display da rotação
+   */
+  private updateRotationDisplay(): void {
+    const rotationSlider = this.getElementById('rotationValue');
+    const rotation = (this.getElementById('cameraRotation') as HTMLInputElement).value;
+    rotationSlider.textContent = `${rotation}°`;
+  }
+
+  /**
+   * Atualiza posição da câmera via input
+   */
+  private updateCameraPosition(): void {
+    if (!this.state.selectedCamera) return;
+    
+    const x = parseInt((this.getElementById('cameraX') as HTMLInputElement).value);
+    const y = parseInt((this.getElementById('cameraY') as HTMLInputElement).value);
+    
+    if (!isNaN(x) && !isNaN(y)) {
+      this.state.selectedCamera.x = Math.max(0, Math.min(x, this.canvas.width));
+      this.state.selectedCamera.y = Math.max(0, Math.min(y, this.canvas.height));
+      this.drawCanvas();
+    }
+  }
+
+  /**
+   * Aplica mudanças nos controles da câmera
+   */
+  private updateSelectedCamera(): void {
+    if (!this.state.selectedCamera) return;
+    
+    const x = parseInt((this.getElementById('cameraX') as HTMLInputElement).value);
+    const y = parseInt((this.getElementById('cameraY') as HTMLInputElement).value);
+    const angle = parseInt((this.getElementById('cameraAngle') as HTMLInputElement).value);
+    const range = parseInt((this.getElementById('cameraRange') as HTMLInputElement).value);
+    const rotation = parseInt((this.getElementById('cameraRotation') as HTMLInputElement).value);
+    
+    this.state.selectedCamera.x = Math.max(0, Math.min(x, this.canvas.width));
+    this.state.selectedCamera.y = Math.max(0, Math.min(y, this.canvas.height));
+    this.state.selectedCamera.angle = angle;
+    this.state.selectedCamera.range = range;
+    
+    // Adiciona propriedade de rotação se não existir
+    (this.state.selectedCamera as any).rotation = rotation;
+    
+    this.drawCanvas();
+    console.log('🔄 Câmera atualizada:', this.state.selectedCamera);
+  }
+
+  /**
+   * Remove a câmera selecionada
+   */
+  private deleteSelectedCamera(): void {
+    if (!this.state.selectedCamera) return;
+    
+    const index = this.state.cameras.findIndex(c => c.id === this.state.selectedCamera!.id);
+    if (index !== -1) {
+      const removedCamera = this.state.cameras.splice(index, 1)[0];
+      this.state.selectedCamera = null;
+      this.hideCameraControls();
+      this.drawCanvas();
+      this.updateCameraCount();
+      console.log('🗑️ Câmera removida:', removedCamera);
     }
   }
 
@@ -292,12 +591,10 @@ export class CFTVApp {
       const isSelected = this.state.selectedCamera?.id === camera.id;
       const color = CAMERA_CONFIG.colors[camera.type];
       const size = CAMERA_CONFIG.sizes[camera.type];
+      const rotation = (camera as any).rotation || 0;
 
-      // Desenha área de cobertura
-      this.ctx.fillStyle = `${color}20`;
-      this.ctx.beginPath();
-      this.ctx.arc(camera.x, camera.y, camera.range, 0, 2 * Math.PI);
-      this.ctx.fill();
+      // Desenha área de cobertura (setor circular)
+      this.drawCameraCoverage(camera, rotation);
 
       // Desenha câmera
       this.ctx.fillStyle = color;
@@ -314,12 +611,85 @@ export class CFTVApp {
         this.ctx.stroke();
       }
 
+      // Desenha direção da câmera
+      this.drawCameraDirection(camera, rotation, size, color);
+
       // Desenha label
       this.ctx.fillStyle = '#000';
       this.ctx.font = '12px Arial';
       this.ctx.textAlign = 'center';
       this.ctx.fillText(camera.label, camera.x, camera.y - size - 5);
     });
+  }
+
+  /**
+   * Desenha área de cobertura da câmera
+   */
+  private drawCameraCoverage(camera: Camera, rotation: number): void {
+    const angleRad = (camera.angle * Math.PI) / 180;
+    const rotationRad = (rotation * Math.PI) / 180;
+    const startAngle = rotationRad - angleRad / 2;
+    const endAngle = rotationRad + angleRad / 2;
+
+    this.ctx.fillStyle = `${CAMERA_CONFIG.colors[camera.type]}20`;
+    this.ctx.beginPath();
+    this.ctx.moveTo(camera.x, camera.y);
+    this.ctx.arc(camera.x, camera.y, camera.range, startAngle, endAngle);
+    this.ctx.closePath();
+    this.ctx.fill();
+
+    // Desenha bordas do cone de visão
+    this.ctx.strokeStyle = `${CAMERA_CONFIG.colors[camera.type]}60`;
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(camera.x, camera.y);
+    this.ctx.lineTo(
+      camera.x + camera.range * Math.cos(startAngle),
+      camera.y + camera.range * Math.sin(startAngle)
+    );
+    this.ctx.moveTo(camera.x, camera.y);
+    this.ctx.lineTo(
+      camera.x + camera.range * Math.cos(endAngle),
+      camera.y + camera.range * Math.sin(endAngle)
+    );
+    this.ctx.stroke();
+  }
+
+  /**
+   * Desenha indicador de direção da câmera
+   */
+  private drawCameraDirection(camera: Camera, rotation: number, size: number, color: string): void {
+    const rotationRad = (rotation * Math.PI) / 180;
+    const directionLength = size + 8;
+    
+    this.ctx.strokeStyle = color;
+    this.ctx.lineWidth = 3;
+    this.ctx.beginPath();
+    this.ctx.moveTo(camera.x, camera.y);
+    this.ctx.lineTo(
+      camera.x + directionLength * Math.cos(rotationRad),
+      camera.y + directionLength * Math.sin(rotationRad)
+    );
+    this.ctx.stroke();
+
+    // Desenha seta na ponta
+    const arrowSize = 4;
+    this.ctx.fillStyle = color;
+    this.ctx.beginPath();
+    this.ctx.moveTo(
+      camera.x + directionLength * Math.cos(rotationRad),
+      camera.y + directionLength * Math.sin(rotationRad)
+    );
+    this.ctx.lineTo(
+      camera.x + (directionLength - arrowSize) * Math.cos(rotationRad - 0.3),
+      camera.y + (directionLength - arrowSize) * Math.sin(rotationRad - 0.3)
+    );
+    this.ctx.lineTo(
+      camera.x + (directionLength - arrowSize) * Math.cos(rotationRad + 0.3),
+      camera.y + (directionLength - arrowSize) * Math.sin(rotationRad + 0.3)
+    );
+    this.ctx.closePath();
+    this.ctx.fill();
   }
 
   /**
@@ -331,6 +701,10 @@ export class CFTVApp {
       this.state.walls = [];
       this.state.selectedCamera = null;
       this.state.nextCameraId = 1;
+      this.state.nextWallId = 1;
+      this.state.isDrawingWall = false;
+      this.state.wallStartPoint = null;
+      this.hideCameraControls();
       this.drawCanvas();
       this.updateCameraCount();
     }
@@ -540,14 +914,31 @@ export class CFTVApp {
     const instructionsElement = document.getElementById('modeInstructions');
     if (instructionsElement) {
       const instructions = {
-        select: 'Clique para selecionar e mover câmeras.',
+        select: 'Clique para selecionar e arrastar câmeras. Use os controles para ajustar ângulo e alcance.',
         camera: 'Clique no mapa para adicionar câmeras.',
-        wall: 'Clique e arraste para desenhar paredes.',
-        delete: 'Clique para remover câmeras ou paredes.',
+        wall: this.state.isDrawingWall 
+          ? 'Clique no ponto final da parede para completar o desenho.'
+          : 'Clique e arraste para desenhar paredes.',
+        delete: 'Clique em câmeras ou paredes para removê-las.',
       };
       
+      const bgColor = {
+        select: 'bg-blue-50 border-blue-200',
+        camera: 'bg-green-50 border-green-200',
+        wall: this.state.isDrawingWall ? 'bg-orange-50 border-orange-200' : 'bg-yellow-50 border-yellow-200',
+        delete: 'bg-red-50 border-red-200',
+      };
+
+      const textColor = {
+        select: 'text-blue-800',
+        camera: 'text-green-800',
+        wall: this.state.isDrawingWall ? 'text-orange-800' : 'text-yellow-800',
+        delete: 'text-red-800',
+      };
+      
+      instructionsElement.className = `mt-4 p-3 border rounded-lg ${bgColor[this.state.currentTool]}`;
       instructionsElement.innerHTML = `
-        <p class="text-sm text-blue-800">
+        <p class="text-sm ${textColor[this.state.currentTool]}">
           ${instructions[this.state.currentTool]}
         </p>
       `;

@@ -21,6 +21,7 @@ export interface Camera {
   type: CameraType;
   angle: number;
   range: number;
+  rotation: number;
   floor: FloorLevel;
   label: string;
   status: CameraStatus;
@@ -101,6 +102,10 @@ export interface AppState {
   nextWallId: number;
   selectedCamera: Camera | null;
   currentFloor: FloorLevel;
+  floors: {
+    total: number;
+    names: Record<number, string>;
+  };
   isDrawingWall: boolean;
   isAddingCamera: boolean;
   wallStartPoint: Point2D | null;
@@ -110,6 +115,12 @@ export interface AppState {
     offsetX: number;
     offsetY: number;
     isDragging: boolean;
+  };
+  cameraEdit: {
+    isRotating: boolean;
+    isResizing: boolean;
+    rotationHandle: Point2D | null;
+    rangeHandle: Point2D | null;
   };
 }
 

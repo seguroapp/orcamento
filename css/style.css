@@ -56,23 +56,33 @@ body {
     * {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        box-sizing: border-box !important;
     }
     
-    body { 
+    @page {
+        size: A4;
+        margin: 12mm 8mm 12mm 12mm;
+        padding: 0 !important;
+    }
+    
+    html, body { 
         background: white !important; 
         margin: 0 !important;
-        padding: 15mm !important;
+        padding: 0 !important;
         color: #000 !important;
         font-family: 'Arial', sans-serif !important;
-        font-size: 11pt !important;
-        line-height: 1.4 !important;
+        font-size: 9pt !important;
+        line-height: 1.2 !important;
+        height: auto !important;
+        overflow: visible !important;
     }
     
-    /* Ocultar elementos de interface na impressão */
+    /* Ocultar TODOS os elementos de interface na impressão */
     .header, .controls-panel, .canvas-section, .budget-section, 
     .tool-btn, .mode-selector, .camera-type-selector, .quick-actions,
-    #budgetModal, .container > .grid, button, input, select, textarea,
-    .canvas-container, #canvasInfo, #modeInstructions { 
+    #budgetModal, #proposalConfigModal, .container > .grid, .container > .space-y-6, 
+    button, input, select, textarea, .canvas-container, #canvasInfo, #modeInstructions,
+    .container, nav, aside, .sidebar { 
         display: none !important; 
     }
     
@@ -85,238 +95,466 @@ body {
         padding: 0 !important;
         box-shadow: none !important;
         background: white !important;
-    }
-    
-    .proposta-section {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        margin-bottom: 20pt !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
     }
     
     /* ========================================
-       RESET DE CLASSES TAILWIND PARA IMPRESSÃO
+       PREVENÇÃO DE FOLHAS EM BRANCO
     ======================================== */
-    .text-center { text-align: center !important; }
-    .text-left { text-align: left !important; }
-    .text-right { text-align: right !important; }
-    .font-bold { font-weight: bold !important; }
-    .font-semibold { font-weight: 600 !important; }
-    .font-medium { font-weight: 500 !important; }
-    .font-extrabold { font-weight: 800 !important; }
-    
-    /* Margens e espaçamentos */
-    .mb-1 { margin-bottom: 4pt !important; }
-    .mb-2 { margin-bottom: 8pt !important; }
-    .mb-3 { margin-bottom: 12pt !important; }
-    .mb-4 { margin-bottom: 16pt !important; }
-    .mb-6 { margin-bottom: 24pt !important; }
-    .mt-1 { margin-top: 4pt !important; }
-    .mt-2 { margin-top: 8pt !important; }
-    .mt-4 { margin-top: 16pt !important; }
-    .mt-6 { margin-top: 24pt !important; }
-    .p-2 { padding: 8pt !important; }
-    .p-3 { padding: 12pt !important; }
-    .p-4 { padding: 16pt !important; }
-    .pt-3 { padding-top: 12pt !important; }
-    .pt-6 { padding-top: 24pt !important; }
-    .pb-1 { padding-bottom: 4pt !important; }
-    .pb-4 { padding-bottom: 16pt !important; }
-    
-    /* Bordas e elementos visuais */
-    .border-b { border-bottom: 1px solid #e5e7eb !important; }
-    .border-t { border-top: 1px solid #e5e7eb !important; }
-    .border-t-2 { border-top: 2px solid #c7d2fe !important; }
-    .border-b-2 { border-bottom: 2px solid #e0e7ff !important; }
-    .border-l-4 { border-left: 4px solid #6366f1 !important; }
-    .border-2 { border: 2px solid !important; }
-    .rounded-lg { border-radius: 8pt !important; }
-    .rounded-sm { border-radius: 2pt !important; }
+    .proposal-print-only > * {
+        page-break-inside: avoid-page !important;
+        break-inside: avoid !important;
+        orphans: 3 !important;
+        widows: 3 !important;
+    }
     
     /* ========================================
-       TIPOGRAFIA PARA IMPRESSÃO
+       CABEÇALHO DA PROPOSTA (COMPACTO)
     ======================================== */
-    h1 {
-        color: #1e3a8a !important;
-        font-size: 20pt !important;
-        font-weight: bold !important;
-        text-align: center !important;
-        margin: 0 0 12pt 0 !important;
-        border-bottom: 2px solid #1e3a8a !important;
+    .proposal-header {
+        border-bottom: 2px solid #1e40af !important;
         padding-bottom: 8pt !important;
+        margin-bottom: 12pt !important;
+        text-align: center !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
     
-    h2 {
-        color: #1e3a8a !important;
-        font-size: 14pt !important;
+    .proposal-header h1 {
+        color: #1e40af !important;
+        font-size: 16pt !important;
         font-weight: bold !important;
-        margin: 20pt 0 12pt 0 !important;
-        border-bottom: 1px solid #d1d5db !important;
-        padding-bottom: 4pt !important;
+        margin: 0 0 4pt 0 !important;
+        letter-spacing: 0.5pt !important;
     }
     
-    h3 {
+    .proposal-header h2 {
         color: #374151 !important;
-        font-size: 12pt !important;
-        font-weight: bold !important;
-        margin: 16pt 0 8pt 0 !important;
-    }
-    
-    p {
-        margin: 0 0 8pt 0 !important;
-        color: #374151 !important;
+        font-size: 11pt !important;
+        font-weight: normal !important;
+        margin: 0 !important;
     }
     
     /* ========================================
-       CORES DE TEXTO PARA IMPRESSÃO
+       INFORMAÇÕES DA EMPRESA (COMPACTA)
     ======================================== */
-    .text-gray-700 { color: #374151 !important; }
-    .text-gray-600 { color: #4b5563 !important; }
-    .text-gray-500 { color: #6b7280 !important; }
-    .text-indigo-800 { color: #1e3a8a !important; }
-    .text-indigo-700 { color: #1d4ed8 !important; }
-    .text-indigo-600 { color: #2563eb !important; }
-    .text-blue-800 { color: #1e40af !important; }
-    .text-red-500 { color: #ef4444 !important; }
+    .company-info {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 3pt !important;
+        padding: 8pt !important;
+        margin-bottom: 10pt !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
     
-    /* Cores de fundo */
-    .bg-gray-50 { background-color: #f9fafb !important; }
-    .bg-indigo-50 { background-color: #eff6ff !important; }
-    .bg-blue-50 { background-color: #eff6ff !important; }
-    
-    /* Cores de bordas */
-    .border-indigo-500 { border-color: #6366f1 !important; }
-    .border-indigo-200 { border-color: #c7d2fe !important; }
-    .border-blue-200 { border-color: #bfdbfe !important; }
-    .border-indigo-100 { border-color: #e0e7ff !important; }
-    
-    /* ========================================
-       TABELAS PARA IMPRESSÃO
-    ======================================== */
-    table { 
-        width: 100% !important; 
-        border-collapse: collapse !important;
-        margin: 12pt 0 !important;
+    .company-info h3 {
+        color: #1e40af !important;
         font-size: 10pt !important;
-    }
-    
-    table th {
-        background-color: #f3f4f6 !important;
-        color: #374151 !important;
         font-weight: bold !important;
-        padding: 6pt 8pt !important;
-        border: 1px solid #d1d5db !important;
-        text-align: left !important;
+        margin: 0 0 4pt 0 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+        padding-bottom: 2pt !important;
     }
     
-    table td {
-        padding: 6pt 8pt !important;
-        border: 1px solid #d1d5db !important;
-        vertical-align: top !important;
-        color: #374151 !important;
-    }
-    
-    table tr:nth-child(even) {
-        background-color: #f9fafb !important;
+    .company-info p {
+        margin: 1pt 0 !important;
+        font-size: 8pt !important;
+        line-height: 1.3 !important;
     }
     
     /* ========================================
-       IMAGENS E MÍDIA PARA IMPRESSÃO
+       LAYOUT DO PROJETO (PÁGINA 2)
     ======================================== */
-    img { 
-        max-width: 100% !important; 
-        height: auto !important; 
+    .project-visual {
+        page-break-before: always !important;
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+        margin: 0 0 20pt 0 !important;
+        padding: 0 !important;
+    }
+    
+    .project-visual h3 {
+        color: #1e40af !important;
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        margin: 0 0 12pt 0 !important;
+        border-bottom: 3px solid #3b82f6 !important;
+        padding-bottom: 6pt !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1pt !important;
+    }
+    
+    .canvas-print-container {
+        border: 3px solid #1e40af !important;
+        border-radius: 8pt !important;
+        padding: 15pt !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+        text-align: center !important;
+        margin: 0 0 15pt 0 !important;
+        box-shadow: 0 4pt 16pt rgba(30, 64, 175, 0.2) !important;
         page-break-inside: avoid !important;
     }
     
+    #printCanvas {
+        max-width: 95% !important;
+        height: 350px !important;
+        border: 2px solid #1e40af !important;
+        border-radius: 6pt !important;
+        background: white !important;
+        box-shadow: 0 2pt 8pt rgba(0,0,0,0.15) !important;
+    }
+    
+    .canvas-print-container p {
+        font-size: 10pt !important;
+        color: #1e40af !important;
+        margin: 10pt 0 0 0 !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5pt !important;
+        font-style: italic !important;
+    }
+    
     /* ========================================
-       BOX DE TOTAIS E LAYOUT ESPECIAL
+       DISTRIBUIÇÃO POR ANDARES (REMOVIDA)
     ======================================== */
-    .total-investimento {
-        background-color: #eff6ff !important;
-        border: 2px solid #1e3a8a !important;
+    .floors-section {
+        display: none !important; /* Seção removida da proposta */
+    }
+    
+    .floors-section h3, 
+    .floors-section .bg-gray-50,
+    .floor-info,
+    .floor-info h4,
+    .floor-details {
+        display: none !important; /* Oculta todos os elementos relacionados */
+    }
+    
+    /* ========================================
+       TABELA DE ORÇAMENTO (PÁGINA 3)
+    ======================================== */
+    .budget-section {
+        page-break-before: auto !important;
+        page-break-inside: auto !important;
+        page-break-after: auto !important;
+        margin: 15pt 0 15pt 0 !important;
         padding: 12pt !important;
-        margin: 16pt 0 !important;
-        border-radius: 8pt !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+        border: 2px solid #3b82f6 !important;
+        border-radius: 6pt !important;
+        box-shadow: 0 2pt 8pt rgba(0,0,0,0.1) !important;
     }
     
-    /* Layout flexível */
-    .flex.justify-between {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
+    .budget-section h3 {
+        color: #1e40af !important;
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin: 0 0 12pt 0 !important;
+        border-bottom: 2px solid #3b82f6 !important;
+        padding-bottom: 4pt !important;
+        text-align: center !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1pt !important;
     }
     
-    /* Remover sombras na impressão */
-    .shadow-inner, .shadow-lg, .shadow-md, .shadow-sm {
-        box-shadow: none !important;
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 8pt !important;
+        margin-bottom: 8pt !important;
+        break-inside: auto !important;
+        background: white !important;
+        border-radius: 4pt !important;
+        overflow: hidden !important;
+        box-shadow: 0 1pt 4pt rgba(0,0,0,0.1) !important;
+    }
+    
+    table th {
+        background: #1e40af !important;
+        color: white !important;
+        font-weight: bold !important;
+        padding: 6pt 4pt !important;
+        border: none !important;
+        text-align: center !important;
+        font-size: 9pt !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3pt !important;
+    }
+    
+    table td {
+        padding: 4pt 6pt !important;
+        border: 1px solid #e2e8f0 !important;
+        vertical-align: middle !important;
+        font-size: 8pt !important;
+        line-height: 1.3 !important;
+        background: white !important;
+    }
+    
+    table tr {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+    
+    table tr:nth-child(even) td {
+        background: #f8fafc !important;
+    }
+    
+    table tr:hover td {
+        background: #e2e8f0 !important;
+    }
+    
+    /* Colunas específicas da tabela */
+    table th:nth-child(1), table td:nth-child(1) { width: 8% !important; text-align: center !important; font-weight: bold !important; }
+    table th:nth-child(2), table td:nth-child(2) { width: 45% !important; text-align: left !important; }
+    table th:nth-child(3), table td:nth-child(3) { width: 10% !important; text-align: center !important; font-weight: bold !important; }
+    table th:nth-child(4), table td:nth-child(4) { width: 18% !important; text-align: right !important; font-weight: bold !important; color: #059669 !important; }
+    table th:nth-child(5), table td:nth-child(5) { width: 19% !important; text-align: right !important; font-weight: bold !important; color: #1e40af !important; }
+    
+    /* ========================================
+       TOTAL DO INVESTIMENTO (FINAL DA PRIMEIRA PÁGINA)
+    ======================================== */
+    .total-section-first-page-bottom {
+        page-break-inside: avoid !important;
+        margin: 10pt 0 15pt 0 !important;
+        border: 2px solid #1e40af !important;
+        border-radius: 6pt !important;
+        padding: 10pt !important;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+        box-shadow: 0 2pt 6pt rgba(30, 64, 175, 0.1) !important;
+    }
+    
+    .total-section-first-page-bottom .total-investimento h3 {
+        color: #1e40af !important;
+        font-size: 10pt !important;
+        font-weight: bold !important;
+        margin: 0 0 4pt 0 !important;
+        text-align: center !important;
+        letter-spacing: 0.5pt !important;
+        text-transform: uppercase !important;
+    }
+    
+    .total-section-first-page-bottom .total-investimento div {
+        color: #1e40af !important;
+        font-size: 16pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        margin: 0 !important;
+    }
+
+    /* ========================================
+       TOTAL DO INVESTIMENTO (PRIMEIRA PÁGINA) - REMOVIDO
+    ======================================== */
+    .total-section-first-page {
+        display: none !important; /* Oculta a seção antiga */
+    }
+
+    /* ========================================
+       TOTAL DO INVESTIMENTO (COMPACTO) - REMOVIDO
+    ======================================== */
+    .total-section {
+        display: none !important; /* Oculta a seção duplicada */
     }
     
     /* ========================================
-       LISTAS E ELEMENTOS ESPECIAIS
+       ESPECIFICAÇÕES, CONDIÇÕES E OBSERVAÇÕES (PRIMEIRA PÁGINA)
     ======================================== */
-    ul.list-disc {
-        list-style-type: disc !important;
-        margin-left: 20pt !important;
+    .specs-section-first-page, .terms-section-first-page, .observations-section-first-page {
+        page-break-inside: avoid !important;
         margin-bottom: 12pt !important;
     }
     
-    ul.list-disc li {
-        margin-bottom: 4pt !important;
+    .specs-section-first-page h3, .terms-section-first-page h3, .observations-section-first-page h3 {
+        color: #1e40af !important;
+        font-size: 11pt !important;
+        font-weight: bold !important;
+        margin: 0 0 6pt 0 !important;
+        border-bottom: 2px solid #3b82f6 !important;
+        padding-bottom: 3pt !important;
     }
     
-    /* Espaçamento vertical */
-    .space-y-1 > * + * { margin-top: 4pt !important; }
-    .space-y-2 > * + * { margin-top: 8pt !important; }
+    .specs-section-first-page .bg-gray-50, .observations-section-first-page .bg-yellow-50 {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 4pt !important;
+        padding: 8pt !important;
+    }
     
-    /* Classes utilitárias */
-    .ml-6 { margin-left: 24pt !important; }
-    .gap-4 { gap: 16pt !important; }
+    .specs-section-first-page ul, .observations-section-first-page ul {
+        margin: 0 0 6pt 14pt !important;
+        padding: 0 !important;
+    }
     
-    /* Força display block para divs */
-    .mb-2, .mb-3, .mb-4, .mb-6 {
-        display: block !important;
+    .specs-section-first-page li, .observations-section-first-page li, .terms-section-first-page p {
+        margin-bottom: 3pt !important;
+        font-size: 9pt !important;
+        line-height: 1.3 !important;
+    }
+    
+    .terms-section-first-page .text-sm {
+        font-size: 9pt !important;
+        line-height: 1.3 !important;
+    }
+
+    /* ========================================
+       ESPECIFICAÇÕES E TERMOS (COMPACTOS) - OCULTAS
+    ======================================== */
+    .specs-section, .terms-section, .observations-section {
+        display: none !important; /* Oculta as seções duplicadas */
     }
     
     /* ========================================
-       LARGURAS DE COLUNAS PARA TABELAS
+       RODAPÉ (PÁGINA FINAL)
     ======================================== */
-    .w-1\/3 { width: 33.333% !important; }
-    .w-1\/12 { width: 8.333% !important; }
-    .w-1\/6 { width: 16.666% !important; }
-    
-    /* Alinhamento de texto específico para tabelas */
-    .text-center th, .text-center td { text-align: center !important; }
-    .text-right th, .text-right td { text-align: right !important; }
-    
-    /* Preservar quebras de linha */
-    .whitespace-pre-wrap { white-space: pre-wrap !important; }
-    
-    /* ========================================
-       QUEBRAS DE PÁGINA E RODAPÉ
-    ======================================== */
-    .page-break { page-break-before: always !important; }
-    
-    .proposta-section:nth-child(4) {
-        page-break-before: auto;
-    }
-    
-    .proposta-footer {
-        border-top: 2px solid #1e3a8a !important;
-        padding-top: 12pt !important;
-        margin-top: 24pt !important;
+    .proposal-footer {
+        border-top: 2px solid #1e40af !important;
+        padding-top: 8pt !important;
+        margin-top: 15pt !important;
         text-align: center !important;
         font-size: 9pt !important;
         color: #6b7280 !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
+    
+    .proposal-footer p {
+        margin-bottom: 6pt !important;
+        line-height: 1.4 !important;
+    }
+    
+    .proposal-footer div {
+        font-size: 7pt !important;
+        color: #9ca3af !important;
+        font-style: italic !important;
     }
     
     /* ========================================
-       TAMANHOS DE FONTE RESPONSIVOS
+       CONTROLE DE QUEBRAS DE PÁGINA OTIMIZADO
     ======================================== */
-    .text-xs { font-size: 9pt !important; }
-    .text-sm { font-size: 10pt !important; }
-    .text-base { font-size: 11pt !important; }
-    .text-lg { font-size: 12pt !important; }
-    .text-xl { font-size: 14pt !important; }
-    .text-2xl { font-size: 16pt !important; }
-    .text-3xl { font-size: 18pt !important; }
+    .page-break {
+        page-break-before: always !important;
+    }
+    
+    /* Layout do projeto sempre na segunda página */
+    .project-visual {
+        page-break-before: always !important;
+        page-break-after: auto !important;
+    }
+    
+    /* Evita quebras indesejadas na tabela de orçamento */
+    .budget-section {
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+    }
+    
+    /* Força quebra antes das especificações se necessário */
+    .floors-section {
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+    }
+    
+    /* Controle de órfãos e viúvas */
+    p, li, td, th {
+        orphans: 2 !important;
+        widows: 2 !important;
+    }
+}
+
+/* ========================================
+   ESTILOS NORMAIS (TELA)
+======================================== */
+
+/* Slider customizado */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Animações de botões */
+.tool-btn {
+    transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Container de canvas responsivo */
+.canvas-container {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Estilo para elementos selecionados */
+.selected {
+    outline: 3px solid #4F46E5;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   ESTILOS NORMAIS (TELA)
+======================================== */
+
+/* Slider customizado */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4F46E5;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Animações de botões */
+.tool-btn {
+    transition: all 0.2s ease;
+}
+
+.tool-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Container de canvas responsivo */
+.canvas-container {
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Estilo para elementos selecionados */
+.selected {
+    outline: 3px solid #4F46E5;
+    outline-offset: 2px;
 }

@@ -56,6 +56,42 @@
                     </select>
                 </div>
 
+                <!-- Seletor de Andares -->
+                <div class="floor-selector">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">🏢 Andar Atual</label>
+                    <div class="flex items-center space-x-2">
+                        <select id="currentFloor" class="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="1">1º Andar - Térreo</option>
+                            <option value="2">2º Andar</option>
+                            <option value="3">3º Andar</option>
+                            <option value="4">4º Andar</option>
+                            <option value="5">5º Andar</option>
+                        </select>
+                        <button id="addFloor" class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm" title="Adicionar Andar">
+                            +
+                        </button>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-600">
+                        <span id="floorInfo">Câmeras neste andar: <span id="floorCameraCount">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Navegação de Andares -->
+                <div class="floor-navigation">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">🔄 Navegação Rápida</label>
+                    <div class="grid grid-cols-3 gap-1" id="floorButtons">
+                        <button class="floor-btn active p-2 bg-indigo-500 text-white rounded text-xs hover:bg-indigo-600 transition" data-floor="1">
+                            1º
+                        </button>
+                        <button class="floor-btn p-2 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 transition" data-floor="2">
+                            2º
+                        </button>
+                        <button class="floor-btn p-2 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300 transition" data-floor="3">
+                            3º
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Ações Rápidas -->
                 <div class="quick-actions">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Ações</label>
@@ -71,96 +107,191 @@
             </div>
         </div>
 
-        <!-- Layout Principal - Canvas e Orçamento -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Layout Principal - Canvas, Configurações e Orçamento -->
+        <div class="space-y-6">
             
-            <!-- Área do Canvas -->
-            <div class="canvas-section bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Mapa do Projeto</h2>
+            <!-- Layout Horizontal: Canvas e Configurações -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
                 
-                <!-- Canvas Container -->
-                <div class="canvas-container relative border-2 border-gray-200 rounded-lg overflow-hidden">
-                    <canvas id="mapCanvas" width="800" height="450" 
-                            class="block w-full h-auto cursor-crosshair">
-                        Seu navegador não suporta canvas HTML5.
-                    </canvas>
+                <!-- Área do Canvas -->
+                <div class="xl:col-span-2 canvas-section bg-white rounded-lg shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-800">Mapa do Projeto</h2>
+                        <div class="text-sm text-gray-600">
+                            <span id="currentFloorDisplay">Andar: 1º</span> | 
+                            <span id="totalFloorsDisplay">Total: 3 andares</span>
+                        </div>
+                    </div>
                     
-                    <!-- Canvas Overlay para informações -->
-                    <div id="canvasInfo" class="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs p-2 rounded hidden">
-                        <div id="mouseCoords">X: 0, Y: 0</div>
-                        <div id="cameraCount">Câmeras: 0</div>
+                    <!-- Canvas Container -->
+                    <div class="canvas-container relative border-2 border-gray-200 rounded-lg overflow-hidden">
+                        <canvas id="mapCanvas" width="800" height="450" 
+                                class="block w-full h-auto cursor-crosshair">
+                            Seu navegador não suporta canvas HTML5.
+                        </canvas>
+                        
+                        <!-- Canvas Overlay para informações -->
+                        <div id="canvasInfo" class="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs p-2 rounded hidden">
+                            <div id="mouseCoords">X: 0, Y: 0</div>
+                            <div id="cameraCount">Câmeras: 0</div>
+                        </div>
+                    </div>
+
+                    <!-- Instruções -->
+                    <div id="modeInstructions" class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p class="text-sm text-blue-800">
+                            Clique para selecionar e mover câmeras.
+                        </p>
+                    </div>
+
+                    <!-- Instruções de Controle de Ângulos -->
+                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <h4 class="text-sm font-semibold text-yellow-800 mb-2">⌨️ Controles de Rotação</h4>
+                        <div class="text-xs text-yellow-700 space-y-1">
+                            <div><strong>Setas ← →</strong> ou <strong>A D</strong>: Rotacionar ±15°</div>
+                            <div><strong>↑ W</strong>: Norte • <strong>↓ S</strong>: Sul • <strong>Espaço</strong>: Leste</div>
+                            <div><strong>Q</strong>: Noroeste • <strong>E</strong>: Nordeste • <strong>Z</strong>: Sudoeste • <strong>C</strong>: Sudeste</div>
+                            <div class="text-yellow-600 mt-2">💡 Selecione uma câmera primeiro, depois use as teclas</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Instruções -->
-                <div id="modeInstructions" class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p class="text-sm text-blue-800">
-                        Clique para selecionar e mover câmeras.
-                    </p>
-                </div>
+                <!-- Área de Configurações da Câmera -->
+                <div class="xl:col-span-1">
+                    <!-- Controles da Câmera Selecionada -->
+                    <div id="cameraControls" class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">📹 Controles da Câmera</h3>
+                        
+                        <!-- Informações da Câmera -->
+                        <div id="cameraInfo" class="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                            <p class="text-sm text-gray-600">Selecione uma câmera no mapa para editar suas configurações</p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Tipo de Câmera -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Câmera</label>
+                                <select id="cameraTypeSelect" class="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                    <option value="dome">Dome</option>
+                                    <option value="bullet">Bullet</option>
+                                    <option value="ptz">PTZ</option>
+                                    <option value="fisheye">Fisheye</option>
+                                </select>
+                            </div>
 
-                <!-- Controles da Câmera Selecionada -->
-                <div id="cameraControls" class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg hidden">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Controles da Câmera</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Posição -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Posição</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="text-xs text-gray-600">X:</label>
-                                    <input type="number" id="cameraX" min="0" max="800" 
-                                           class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                            <!-- Posição -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Posição</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-xs text-gray-600">X:</label>
+                                        <input type="number" id="cameraX" min="0" max="800" 
+                                               class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-600">Y:</label>
+                                        <input type="number" id="cameraY" min="0" max="450" 
+                                               class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="text-xs text-gray-600">Y:</label>
-                                    <input type="number" id="cameraY" min="0" max="450" 
-                                           class="w-full p-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
-                                </div>
+                            </div>
+
+                            <!-- Ângulo de Visão -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ângulo de Visão: <span id="angleValue">90°</span>
+                                </label>
+                                <input type="range" id="cameraAngle" min="30" max="180" value="90" step="15"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                            </div>
+
+                            <!-- Alcance -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Alcance: <span id="rangeValue">50px</span>
+                                </label>
+                                <input type="range" id="cameraRange" min="20" max="100" value="50" step="5"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                            </div>
+
+                            <!-- Rotação -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Rotação: <span id="rotationValue">0°</span>
+                                </label>
+                                <input type="range" id="cameraRotation" min="0" max="360" value="0" step="15"
+                                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
                             </div>
                         </div>
 
-                        <!-- Ângulo de Visão -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Ângulo de Visão: <span id="angleValue">90°</span>
-                            </label>
-                            <input type="range" id="cameraAngle" min="30" max="180" value="90" step="15"
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        <!-- Presets de Direção -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">🧭 Direções Rápidas</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="cftvApp.applyCameraDirectionPreset('norte')" 
+                                        class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors">
+                                    Norte
+                                </button>
+                                <button onclick="cftvApp.applyCameraDirectionPreset('sul')" 
+                                        class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors">
+                                    Sul
+                                </button>
+                                <button onclick="cftvApp.applyCameraDirectionPreset('leste')" 
+                                        class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors">
+                                    Leste
+                                </button>
+                                <button onclick="cftvApp.applyCameraDirectionPreset('oeste')" 
+                                        class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors">
+                                    Oeste
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Alcance -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Alcance: <span id="rangeValue">50px</span>
-                            </label>
-                            <input type="range" id="cameraRange" min="20" max="100" value="50" step="5"
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        <!-- Presets de Configuração -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">📐 Configurações Rápidas</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="cftvApp.applyCameraPreset('close')" 
+                                        class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors">
+                                    Próximo
+                                </button>
+                                <button onclick="cftvApp.applyCameraPreset('medium')" 
+                                        class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition-colors">
+                                    Médio
+                                </button>
+                                <button onclick="cftvApp.applyCameraPreset('wide')" 
+                                        class="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded hover:bg-orange-200 transition-colors">
+                                    Amplo
+                                </button>
+                                <button onclick="cftvApp.applyCameraPreset('corridor')" 
+                                        class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded hover:bg-purple-200 transition-colors">
+                                    Corredor
+                                </button>
+                                <button onclick="cftvApp.applyCameraPreset('entrance')" 
+                                        class="px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded hover:bg-indigo-200 transition-colors">
+                                    Entrada
+                                </button>
+                                <button onclick="cftvApp.applyCameraPreset('parking')" 
+                                        class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors">
+                                    Estacionamento
+                                </button>
+                            </div>
                         </div>
 
-                        <!-- Rotação -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Rotação: <span id="rotationValue">0°</span>
-                            </label>
-                            <input type="range" id="cameraRotation" min="0" max="360" value="0" step="15"
-                                   class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                        <!-- Botões de Ação -->
+                        <div class="flex flex-col space-y-2 mt-4">
+                            <button id="updateCamera" class="w-full p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-sm">
+                                Aplicar Mudanças
+                            </button>
+                            <button id="deleteCamera" class="w-full p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm">
+                                Remover Câmera
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Botões de Ação -->
-                    <div class="flex space-x-2 mt-4">
-                        <button id="updateCamera" class="flex-1 p-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition text-sm">
-                            Aplicar Mudanças
-                        </button>
-                        <button id="deleteCamera" class="flex-1 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm">
-                            Remover Câmera
-                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Área do Orçamento -->
+            <!-- Área do Orçamento (Largura Completa) -->
             <div class="budget-section bg-white rounded-lg shadow-md p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold text-gray-800">Lista de Orçamento</h2>
@@ -182,15 +313,15 @@
                     </div>
                 </div>
 
-                <!-- Botão de Gerar Proposta -->
-                <button id="generateProposal" class="w-full mt-4 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold">
-                    Gerar Proposta Comercial
-                </button>
-
-                <!-- Botão de Configurar Dados -->
-                <button id="configureProposal" class="w-full mt-2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
-                    Configurar Dados da Proposta
-                </button>
+                <!-- Botões de Ação do Orçamento -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <button id="generateProposal" class="p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold">
+                        Gerar Proposta Comercial
+                    </button>
+                    <button id="configureProposal" class="p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        Configurar Dados da Proposta
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -362,13 +493,131 @@
         </div>
     </div>
 
+    <!-- Modal para Configurar Dados da Proposta -->
+    <div id="proposalConfigModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-screen overflow-y-auto">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ Configurar Dados da Proposta</h3>
+            
+            <form id="proposalConfigForm" class="space-y-6">
+                <!-- Dados da Empresa -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">📍 Dados da Empresa:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Empresa</label>
+                            <input type="text" id="configCompanyName" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="Sua Empresa de Segurança Eletrônica" value="Sua Empresa de Segurança Eletrônica">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
+                            <input type="text" id="configCompanyCNPJ" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="XX.XXX.XXX/XXXX-XX" value="XX.XXX.XXX/XXXX-XX">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
+                            <input type="tel" id="configCompanyPhone" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="(11) 99999-9999" value="(11) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                            <input type="email" id="configCompanyEmail" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="contato@empresa.com.br" value="contato@empresa.com.br">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados do Cliente -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">👤 Dados do Cliente:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nome do Cliente</label>
+                            <input type="text" id="configClientName" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="Nome do Cliente" value="Nome do Cliente">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefone do Cliente</label>
+                            <input type="tel" id="configClientPhone" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="(11) 99999-9999">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">E-mail do Cliente</label>
+                            <input type="email" id="configClientEmail" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="cliente@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">CPF/CNPJ do Cliente</label>
+                            <input type="text" id="configClientDocument" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="XXX.XXX.XXX-XX">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Endereço do Cliente</label>
+                        <textarea id="configClientAddress" rows="2"
+                                  class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                  placeholder="Rua, nº, bairro, cidade, CEP"></textarea>
+                    </div>
+                </div>
+
+                <!-- Configurações da Proposta -->
+                <div class="border rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-700 mb-3">📋 Configurações da Proposta:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Validade (dias)</label>
+                            <input type="number" id="configProposalValidity" min="1" max="90" value="15"
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Prazo de Entrega</label>
+                            <input type="text" id="configDeliveryTime" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="5 a 10 dias úteis" value="5 a 10 dias úteis">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Forma de Pagamento</label>
+                            <input type="text" id="configPaymentMethod" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="À vista com desconto ou parcelado" value="À vista com desconto ou parcelado">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Garantia Equipamentos</label>
+                            <input type="text" id="configWarrantyEquipment" 
+                                   class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500" 
+                                   placeholder="12 meses" value="12 meses">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões do Modal -->
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancelProposalConfig" 
+                            class="flex-1 bg-gray-300 text-gray-700 p-2 rounded-lg hover:bg-gray-400 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="saveProposalConfig"
+                            class="flex-1 bg-indigo-500 text-white p-2 rounded-lg hover:bg-indigo-600 transition">
+                        Salvar Configurações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Seção de Proposta Comercial (Visível apenas na impressão) -->
     <div id="proposalSection" class="proposal-print-only" style="display: none;">
         <!-- Cabeçalho da Proposta -->
         <div class="proposal-header text-center mb-6">
             <h1 class="text-2xl font-bold text-indigo-800 mb-2">PROPOSTA COMERCIAL</h1>
             <h2 class="text-lg font-semibold text-gray-700">Sistema de CFTV - Circuito Fechado de TV</h2>
-            <div class="border-b-2 border-indigo-200 mt-4"></div>
         </div>
 
         <!-- Informações da Empresa -->
@@ -379,14 +628,17 @@
                     <p><strong>Empresa:</strong> <span id="proposalCompanyName">Sua Empresa de Segurança Eletrônica</span></p>
                     <p><strong>Telefone:</strong> <span id="proposalCompanyPhone">(11) 99999-9999</span></p>
                     <p><strong>E-mail:</strong> <span id="proposalCompanyEmail">contato@empresa.com.br</span></p>
+                    <p><strong>CNPJ:</strong> <span id="proposalCompanyCNPJ">XX.XXX.XXX/XXXX-XX</span></p>
                 </div>
                 <div>
                     <h3 class="font-semibold text-gray-800 mb-2">Dados da Proposta:</h3>
                     <p><strong>Data:</strong> <span id="proposalDate"></span></p>
                     <p><strong>Proposta Nº:</strong> <span id="proposalNumber"></span></p>
                     <p><strong>Validade:</strong> <span id="proposalValidity">15 dias</span></p>
+                    <p><strong>Cliente:</strong> <span id="proposalClientName">Nome do Cliente</span></p>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- Dados do Cliente -->
@@ -405,13 +657,64 @@
             <p class="mt-2"><strong>Endereço:</strong> <span id="clientAddress">_________________________________________________________</span></p>
         </div>
 
-        <!-- Projeto Visual -->
+        <!-- Especificações Técnicas (Primeira Página) -->
+        <div class="specs-section-first-page mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Especificações Técnicas:</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <ul class="list-disc ml-6 space-y-1 text-sm">
+                    <li>Câmeras IP com resolução Full HD (1080p)</li>
+                    <li>Gravador NVR com armazenamento em HD</li>
+                    <li>Visualização remota via aplicativo móvel</li>
+                    <li>Gravação contínua e por detecção de movimento</li>
+                    <li>Backup automático e manual dos vídeos</li>
+                    <li>Sistema de alarme integrado</li>
+                    <li>Garantia de 12 meses para equipamentos</li>
+                    <li>Suporte técnico especializado</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Condições Comerciais (Primeira Página) -->
+        <div class="terms-section-first-page mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Condições Comerciais:</h3>
+            <div class="text-sm space-y-2">
+                <p><strong>Forma de Pagamento:</strong> À vista com desconto ou parcelado conforme negociação</p>
+                <p><strong>Prazo de Entrega:</strong> 5 a 10 dias úteis após confirmação do pedido</p>
+                <p><strong>Instalação:</strong> Incluída no valor, realizada por técnicos especializados</p>
+                <p><strong>Garantia:</strong> 12 meses para equipamentos e 6 meses para serviços</p>
+                <p><strong>Validade da Proposta:</strong> 15 dias corridos</p>
+            </div>
+        </div>
+
+        <!-- Observações Importantes (Primeira Página) -->
+        <div class="observations-section-first-page mb-6">
+            <h3 class="font-semibold text-gray-800 mb-3">Observações Importantes:</h3>
+            <div class="text-sm bg-yellow-50 p-4 rounded-lg">
+                <ul class="list-disc ml-6 space-y-1">
+                    <li>Os preços estão sujeitos a alteração sem aviso prévio</li>
+                    <li>Frete não incluso (será calculado conforme localização)</li>
+                    <li>Instalação em locais de difícil acesso pode ter custo adicional</li>
+                    <li>Infraestrutura elétrica e de rede por conta do cliente</li>
+                    <li>Projeto sujeito a visita técnica para confirmação</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Total do Investimento (Final da Primeira Página) -->
+        <div class="total-section-first-page-bottom mb-6">
+            <div class="total-investimento text-center">
+                <h3 class="text-sm font-bold text-indigo-800 mb-1">VALOR TOTAL DO INVESTIMENTO</h3>
+                <div class="text-xl font-bold text-indigo-900" id="proposalTotalValueFirstPage">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- Layout do Projeto -->
         <div class="project-visual mb-6">
-            <h3 class="font-semibold text-gray-800 mb-3">Layout do Projeto:</h3>
+            <h3 class="font-semibold text-gray-800 mb-3">Layout do Projeto - Todos os Andares:</h3>
             <div class="canvas-print-container border-2 border-gray-300 rounded-lg p-4 bg-white">
-                <canvas id="printCanvas" width="800" height="450" class="w-full border rounded"></canvas>
+                <canvas id="printCanvas" width="800" height="450" class="w-full border rounded max-h-none" style="height: auto; max-height: none;"></canvas>
                 <p class="text-sm text-gray-600 mt-2 text-center">
-                    Disposição das câmeras conforme projeto elaborado
+                    Disposição das câmeras em todos os andares do projeto
                 </p>
             </div>
         </div>
@@ -433,57 +736,6 @@
                     <!-- Itens serão inseridos aqui -->
                 </tbody>
             </table>
-        </div>
-
-        <!-- Total do Investimento -->
-        <div class="total-section mb-6">
-            <div class="total-investimento text-center">
-                <h3 class="text-lg font-bold text-indigo-800 mb-2">VALOR TOTAL DO INVESTIMENTO</h3>
-                <div class="text-3xl font-bold text-indigo-900" id="proposalTotalValue">R$ 0,00</div>
-            </div>
-        </div>
-
-        <!-- Especificações Técnicas -->
-        <div class="specs-section mb-6">
-            <h3 class="font-semibold text-gray-800 mb-3">Especificações Técnicas:</h3>
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <ul class="list-disc ml-6 space-y-1 text-sm">
-                    <li>Câmeras IP com resolução Full HD (1080p)</li>
-                    <li>Gravador NVR com armazenamento em HD</li>
-                    <li>Visualização remota via aplicativo móvel</li>
-                    <li>Gravação contínua e por detecção de movimento</li>
-                    <li>Backup automático e manual dos vídeos</li>
-                    <li>Sistema de alarme integrado</li>
-                    <li>Garantia de 12 meses para equipamentos</li>
-                    <li>Suporte técnico especializado</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Termos e Condições -->
-        <div class="terms-section mb-6">
-            <h3 class="font-semibold text-gray-800 mb-3">Condições Comerciais:</h3>
-            <div class="text-sm space-y-2">
-                <p><strong>Forma de Pagamento:</strong> À vista com desconto ou parcelado conforme negociação</p>
-                <p><strong>Prazo de Entrega:</strong> 5 a 10 dias úteis após confirmação do pedido</p>
-                <p><strong>Instalação:</strong> Incluída no valor, realizada por técnicos especializados</p>
-                <p><strong>Garantia:</strong> 12 meses para equipamentos e 6 meses para serviços</p>
-                <p><strong>Validade da Proposta:</strong> 15 dias corridos</p>
-            </div>
-        </div>
-
-        <!-- Observações -->
-        <div class="observations-section mb-6">
-            <h3 class="font-semibold text-gray-800 mb-3">Observações Importantes:</h3>
-            <div class="text-sm bg-yellow-50 p-4 rounded-lg">
-                <ul class="list-disc ml-6 space-y-1">
-                    <li>Os preços estão sujeitos a alteração sem aviso prévio</li>
-                    <li>Frete não incluso (será calculado conforme localização)</li>
-                    <li>Instalação em locais de difícil acesso pode ter custo adicional</li>
-                    <li>Infraestrutura elétrica e de rede por conta do cliente</li>
-                    <li>Projeto sujeito a visita técnica para confirmação</li>
-                </ul>
-            </div>
         </div>
 
         <!-- Rodapé da Proposta -->
